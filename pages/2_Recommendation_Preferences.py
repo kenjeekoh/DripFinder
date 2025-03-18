@@ -9,7 +9,7 @@ st.set_page_config(page_title="DripFinder | Preferences", layout="wide")
 
 # --- Navbar ---
 st.markdown('<div style="display: flex; align-items: center; padding: 20px 40px;">', unsafe_allow_html=True)
-st.image("assets/logo.png", width=40)
+st.image("assets/logo.png", width=100)
 st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Brand & Silhouette Mapping ---
@@ -58,7 +58,7 @@ silhouette = silhouette if silhouette != "" else None
 # Pre-filled common color options for tag-style multi-select
 common_colors = ['red', 'white', 'black', 'blue', 'green', 'yellow', 'grey', 'purple', 'orange', 'brown', 'beige', 'pink']
 colorway_tags = st.multiselect(
-    "Colorway",
+    "Colorway (Optional)",
     options=common_colors,
     default=[],
     placeholder="Type a color and hit Enter (e.g., red, white, blue)"

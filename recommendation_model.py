@@ -39,7 +39,7 @@ def get_recommendations(Brand, Colorway, Max_price, Silhouette, Gender, df, cosi
 
     df['Retail Price'] = pd.to_numeric(df['Retail Price'], errors='coerce')
 
-    # === Build dynamic filter ===
+    # === Dynamic filtering ===
     filter_conditions = (df['Retail Price'] <= Max_price)
 
     if brand:
@@ -56,25 +56,20 @@ def get_recommendations(Brand, Colorway, Max_price, Silhouette, Gender, df, cosi
     if filtered_df.empty:
         return pd.DataFrame()
 
-    # Use first matching sneaker as reference for cosine similarity
     item_index = filtered_df.index[0]
     sim_scores = list(enumerate(cosine_sim[item_index]))
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-    recommended_indices = []
-    i = 1
-
-    while len(recommended_indices) < top_n and i < len(sim_scores):
-        idx = sim_scores[i][0]
+    # --- BOOST silhouette matches ---
+    boosted_scores = []
+    for idx, score in sim_scores:
         candidate = df.iloc[idx]
+        boost = 0.30 if silhouette and candidate['Silhouette'] == silhouette else 0  # boost for matching silhouette
+        boosted_scores.append((idx, score + boost))
 
-        silhouette_ok = (not silhouette) or (candidate['Silhouette'] == silhouette)
-        gender_ok = (not gender) or (candidate['Gender'] == gender)
+    # Sort after boosting
+    boosted_scores = sorted(boosted_scores, key=lambda x: x[1], reverse=True)
 
-        if silhouette_ok and gender_ok:
-            recommended_indices.append(idx)
-
-        i += 1
+    # Collect top_n results regardless of silhouette
+    recommended_indices = [idx for idx, _ in boosted_scores[1:top_n + 1]]  # skip self
 
     return df.iloc[recommended_indices] if recommended_indices else pd.DataFrame()
-

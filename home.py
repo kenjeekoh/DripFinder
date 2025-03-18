@@ -9,7 +9,7 @@ st.set_page_config(page_title="DripFinder", layout="wide")
 
 # --- Navbar ---
 st.markdown('<div style="display: flex; align-items: center; padding: 20px 40px;">', unsafe_allow_html=True)
-st.image("assets/logo.png", width=40)
+st.image("assets/logo.png", width=100)
 st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Hero Section ---
