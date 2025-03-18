@@ -32,23 +32,31 @@ def get_recommendations(Brand, Colorway, Max_price, Silhouette, Gender, df, cosi
     df['Silhouette'] = df['Silhouette'].str.lower()
     df['Gender'] = df['Gender'].str.lower()
 
+    brand = Brand.lower().strip() if Brand else ""
+    colorway = Colorway.lower().strip() if Colorway else ""
     silhouette = Silhouette.lower().strip() if Silhouette else ""
     gender = Gender.lower().strip() if Gender else ""
 
     df['Retail Price'] = pd.to_numeric(df['Retail Price'], errors='coerce')
 
-    filtered_df = df[
-        (df['Brand'] == Brand.lower()) &
-        (df['Colorway'].str.contains(Colorway.lower(), case=False, na=False)) &
-        (df['Retail Price'] <= Max_price)
-    ]
+    # === Build dynamic filter ===
+    filter_conditions = (df['Retail Price'] <= Max_price)
+
+    if brand:
+        filter_conditions &= (df['Brand'] == brand)
+
+    if colorway:
+        filter_conditions &= (df['Colorway'].str.contains(colorway, case=False, na=False))
 
     if gender:
-        filtered_df = filtered_df[filtered_df['Gender'] == gender]
+        filter_conditions &= (df['Gender'] == gender)
+
+    filtered_df = df[filter_conditions]
 
     if filtered_df.empty:
         return pd.DataFrame()
 
+    # Use first matching sneaker as reference for cosine similarity
     item_index = filtered_df.index[0]
     sim_scores = list(enumerate(cosine_sim[item_index]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
@@ -60,11 +68,8 @@ def get_recommendations(Brand, Colorway, Max_price, Silhouette, Gender, df, cosi
         idx = sim_scores[i][0]
         candidate = df.iloc[idx]
 
-        silhouette_match = silhouette and candidate['Silhouette'] == silhouette
-        silhouette_ok = (not silhouette) or silhouette_match
-
-        gender_match = gender and candidate['Gender'] == gender
-        gender_ok = (not gender) or gender_match
+        silhouette_ok = (not silhouette) or (candidate['Silhouette'] == silhouette)
+        gender_ok = (not gender) or (candidate['Gender'] == gender)
 
         if silhouette_ok and gender_ok:
             recommended_indices.append(idx)
@@ -72,3 +77,4 @@ def get_recommendations(Brand, Colorway, Max_price, Silhouette, Gender, df, cosi
         i += 1
 
     return df.iloc[recommended_indices] if recommended_indices else pd.DataFrame()
+

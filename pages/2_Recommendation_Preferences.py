@@ -25,20 +25,35 @@ brand_silhouettes = {
 st.markdown("## Your Drip Checklist")
 st.markdown("Tell us what you’re feelin’ and we’ll find your next heat drop 🔥")
 
-brand = st.selectbox("Brand", options=['Jordan', 'Nike', 'Puma', 'adidas', 'New Balance'], index=0)
+# Brand selector (optional)
+brand = st.selectbox(
+    "Brand (Optional)", 
+    options=[""] + ['Jordan', 'Nike', 'Puma', 'adidas', 'New Balance'], 
+    index=0
+)
+brand = brand if brand != "" else None
+st.caption("Leave blank to consider all brands")
+
+# Max price input
 max_price = st.text_input("Max Price", placeholder="Type your max price here...")
 
-# Dynamically load silhouette options with search-as-you-type functionality
+# Dynamically load silhouette options based on brand selection
 if brand:
     silhouettes = brand_silhouettes.get(brand, [])
 else:
-    silhouettes = []
+    # If no brand is selected, show all unique silhouettes from all brands
+    all_silhouettes = []
+    for s_list in brand_silhouettes.values():
+        all_silhouettes.extend(s_list)
+    silhouettes = sorted(set(all_silhouettes))
 
+# Silhouette selector (optional)
 silhouette = st.selectbox(
     "Silhouette (Optional)",
     options=[""] + silhouettes,
     index=0
 )
+silhouette = silhouette if silhouette != "" else None
 
 # Pre-filled common color options for tag-style multi-select
 common_colors = ['red', 'white', 'black', 'blue', 'green', 'yellow', 'grey', 'purple', 'orange', 'brown', 'beige', 'pink']
