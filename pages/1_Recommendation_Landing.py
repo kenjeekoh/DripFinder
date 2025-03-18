@@ -11,20 +11,34 @@ st.markdown('<div style="display: flex; align-items: center; padding: 20px 40px;
 st.image("assets/logo.png", width=40)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- Hero Section with background image layered manually ---
-# --- Hero Section with background image layered manually ---
+# --- Hero Section with background image ---
 from PIL import Image
 
 banner = Image.open("assets/1_banner_image.png")
 
 # Background Image
-st.image(banner, use_column_width=True)
+st.image(banner, use_container_width=True)
 
-# Overlay Hero Text Section (manual overlay effect)
+# Overlay Hero Text with faint black gradient
 st.markdown("""
-    <div style="margin-top: -350px; padding: 100px 0; text-align: center; position: relative; z-index: 999;">
-        <h1 style="font-size: 48px; font-weight: bold; color: #ffffff;">Yo, let’s lace you up!</h1>
-        <p style="font-size: 20px; color: #ffffff;">We need a lil’ info to make sure your sneaker recs are straight heat 🔥</p>
+    <div style="
+        margin-top: -500px;
+        position: relative;
+        z-index: 999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 400px;
+    ">
+        <div style="
+            background: rgba(0, 0, 0, 0.4);
+            padding: 40px 60px;
+            border-radius: 12px;
+            text-align: center;
+        ">
+            <h1 style="font-size: 48px; font-weight: bold; color: #ffffff; margin-bottom: 10px;">Yo, let’s lace you up!</h1>
+            <p style="font-size: 20px; color: #ffffff;">We need a lil’ info to make sure your sneaker recs are straight heat 🔥</p>
+        </div>
     </div>
 """, unsafe_allow_html=True)
 
@@ -61,4 +75,4 @@ with st.form("user_info_form"):
 if submitted:
     st.session_state["user_name"] = user_name
     st.session_state["gender"] = gender
-    st.switch_page("2_Recommendation_Preferences.py")
+    st.switch_page("pages/2_Recommendation_Preferences.py")
